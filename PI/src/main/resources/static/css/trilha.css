@@ -1,0 +1,180 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: rgb(15, 15, 15);
+    color: white;
+}
+
+.container {
+    width: 1500px;
+    margin: 100px auto;
+    background-color: rgb(15, 15, 15);
+    padding: 20px;
+    border: 15px solid rgb(219, 215, 215);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #4d4d4d;
+    padding: 10px;
+    border-radius: 4px;
+    color: white;
+}
+
+.perfil {
+    display: flex;
+    align-items: center;
+}
+
+.foto {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin-right: 10px;
+}
+
+.funcionario {
+    font-weight: bold;
+}
+
+.cargo {
+    font-size: 12px;
+}
+
+.proximocargo {
+    font-size: 15px;
+}
+
+.etapa {
+    text-align: center;
+    margin: 20px;
+}
+
+.tarefas {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+
+.objetivos, .status {
+    width: 48%;  /* Garantir que cada seção ocupe 48% da largura */
+    text-align: center;
+    position: relative;
+    margin-bottom: 20px; /* Espaço vertical entre as metas e o status */
+}
+
+.linha-unica {
+    position: absolute;
+    top: 22px; 
+    width: 100%;
+    border-top: 2px solid rgb(255, 255, 255);
+}
+
+.linha-vertical {
+    border-left: 2px solid rgb(255, 255, 255);
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    margin-left: -1px;
+}
+
+.Metas p {
+    margin: 10px 0;
+}
+
+/* Estilo para as metas */
+.meta-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 20px; /* Espaço entre as metas */
+    border-bottom: 1px solid #ccc;
+}
+
+.meta-descricao {
+    flex: 1;
+    text-align: left;
+}
+
+.meta-status-text {
+    text-align: right;
+    flex: 1;
+}
+
+/* Estilo para o status */
+.status-container .status-item {
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
+    padding: 10px 0;
+     justify-content: space-between;
+    align-items: center;
+}
+
+/* Estilo da Bonificação */
+.bonificacao {
+    background-color: #333;
+    padding: 20px;
+    margin-top: 40px;
+    border-radius: 8px;
+    border: 1px solid #fff;
+    text-align: center;
+}
+
+.bonificacao h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.bonificacao p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+/* Estilo do botão */
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4CAF50; /* Cor de fundo */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049; /* Cor ao passar o mouse */
+}
+
+.linha {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+}
+
+.desbloquear {
+    text-align: center;
+    padding: 20px;
+}
+
+.desbloquear button {
+    background-color: #808080;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 10px 20px;
+}
+
+.desbloquear button:hover {
+    background-color: #00ff5e;
+}

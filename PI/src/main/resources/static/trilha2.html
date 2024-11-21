@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/trilha.css">
+    <link rel="stylesheet" href="css/cabecalho.css">
+    <title>Tela de Progresso</title>
+</head>
+<body>
+    <header>
+        <div class="header-bot">
+            <nav class="nav-bot">
+                <ul id="title">
+                    <li><a href="principal2.html">Desenvolve+</a></li>
+                </ul>
+                <ul>
+                    <li><a href="login.html">Sair</a></li>
+                    <li>
+                        <a href="notificação.html">
+                            <i class="fas fa-bell"></i> <!-- Ícone de sino -->
+                            
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <hr id = "cabecalho-linha">
+    <div class="container">
+        <div class="header">
+            <div class="perfil">
+                <div class="foto"></div>
+                <div>
+                    <p class="funcionario" id="funcionario">FUNCIONÁRIO</p>
+                    <p class="cargo" id="cargo">Cargo Atual</p>
+                </div>
+            </div>
+            <div class="proximocargo">
+                Próximo cargo
+            </div>
+        </div>
+
+        <div class="etapa">
+            <h2>ETAPA 1</h2>
+        </div>
+
+        <div class="tarefas">
+            <div class="linha-unica"></div>
+
+            <!-- Divisão de Metas -->
+            <div class="objetivos">
+                <p class="section-title">Metas</p>
+                <div class="Metas" id="metas">
+                    <!-- As metas serão carregadas aqui --> 
+                </div>
+            </div>
+
+            <div class="linha-vertical"></div>
+
+            <!-- Divisão de Status -->
+            <div class="status">
+                <p class="section-title">Status</p>
+                <div class="status-container" id="status">
+                    <!-- Status das metas serão exibidos aqui -->
+                </div>
+            </div>
+        </div>
+
+        <hr class="linha">
+
+        <div class="bonificacao">
+            <h3>Bonificações</h3>
+            <p>----------------</p>
+            <p>----------------</p>
+        </div>
+
+        <hr class="linha">
+
+        <div class="desbloquear">
+            <button id="btnDesbloquear">Finalizar Plano de Carreira</button>
+        </div>
+    </div>
+
+    <script>
+        // Função para carregar os dados do plano de carreira
+        async function carregarDadosDoPlanoDeCarreira(userId) {
+            try {
+                // Buscar dados do usuário
+                const userResponse = await fetch(`http://localhost:8080/users/${userId}`);
+                if (!userResponse.ok) {
+                    throw new Error('Erro ao carregar usuário');
+                }
+                const user = await userResponse.json();
+
+                // Buscar plano de carreira do usuário
+                const planoResponse = await fetch(`http://localhost:8080/planos/usuario/${userId}`);
+                if (!planoResponse.ok) {
+                    throw new Error('Erro ao carregar plano de carreira');
+                }
+                const plano = await planoResponse.json();
+
+                // Atualizar dados na página HTML
+                document.querySelector('.funcionario').textContent = user.name;  // Exibe o nome do usuário
+                document.querySelector('.cargo').textContent = plano.cargoAtual; // Exibe o cargo atual
+                document.querySelector('.proximocargo').textContent = plano.nome; // Exibe o próximo cargo
+
+                // Exibir bonificação abaixo de "Bonificações"
+                const bonificacaoContainer = document.querySelector('.bonificacao');
+                bonificacaoContainer.innerHTML = `<h3>Bonificações</h3><p>${plano.bonificacao}</p>`;  // Exibe o título e a bonificação
+
+                // Agora, buscar as metas com base no ID do plano
+                await carregarMetas(plano.id);  // Passa o ID do plano para buscar as metas
+
+            } catch (error) {
+                console.error('Erro ao carregar os dados:', error);
+                alert('Erro ao carregar os dados. Tente novamente mais tarde.');
+            }
+        }
+
+        // Função para carregar as metas do plano de carreira
+        async function carregarMetas(planoId) {
+            try {
+                // Buscar metas associadas ao plano
+                const metasResponse = await fetch(`http://localhost:8080/metas/plano/${planoId}`);
+                if (!metasResponse.ok) {
+                    throw new Error('Erro ao carregar metas');
+                }
+                const metas = await metasResponse.json();
+
+                // Exibir as metas e seus status nas respectivas seções
+                const metasContainer = document.querySelector('#metas');  // Acessa a div "metas"
+                const statusContainer = document.querySelector('#status');  // Acessa a div "status"
+                metasContainer.innerHTML = ''; // Limpa as metas existentes
+                statusContainer.innerHTML = ''; // Limpa os status existentes
+
+                metas.forEach((meta) => {
+                    // Criar elemento de meta
+                    const metaElement = document.createElement('div');
+                    metaElement.classList.add('meta-status');
+                    metaElement.innerHTML = `
+                        <p class="meta-descricao">${meta.descricao}</p>
+                    `; // Apenas descrição da meta
+
+                    // Criar o status da meta
+                    const statusElement = document.createElement('div');
+                    statusElement.classList.add('status-item');
+                    statusElement.innerHTML = `
+                        <p>${meta.status}</p>
+                    `; // Status da meta
+
+                    // Adicionar a descrição da meta à seção "Metas"
+                    metasContainer.appendChild(metaElement);
+                    // Adicionar o status à seção "Status"
+                    statusContainer.appendChild(statusElement);
+                });
+
+            } catch (error) {
+                console.error('Erro ao carregar as metas:', error);
+                alert('Erro ao carregar as metas. Tente novamente mais tarde.');
+            }
+        }
+
+        // Função para verificar se todas as metas estão concluídas
+        async function verificarMetasConcluidas(planoId) {
+            try {
+                // Buscar metas associadas ao plano
+                const metasResponse = await fetch(`http://localhost:8080/metas/plano/${planoId}`);
+                if (!metasResponse.ok) {
+                    throw new Error('Erro ao carregar metas');
+                }
+                const metas = await metasResponse.json();
+
+                // Verificar se todas as metas têm status "Concluída"
+                const todasConcluidas = metas.every((meta) => meta.status === 'Concluída');
+
+                if (todasConcluidas) {
+                    // Redirecionar para a próxima tela
+                    window.location.href = "final.html";
+                } else {
+                    // Exibir alerta informando que as metas não estão concluídas
+                    alert("Todas as metas devem ser concluídas antes de desbloquear a próxima etapa.");
+                }
+            } catch (error) {
+                console.error('Erro ao verificar metas:', error);
+                alert('Erro ao verificar as metas. Tente novamente mais tarde.');
+            }
+        }
+
+        // Adicionar evento de clique ao botão
+        document.getElementById('btnDesbloquear').addEventListener('click', async () => {
+            const userId = getIdFromUrl(); // Pega o ID do usuário da URL
+            if (userId) {
+                try {
+                    // Buscar plano de carreira do usuário
+                    const planoResponse = await fetch(`http://localhost:8080/planos/usuario/${userId}`);
+                    if (!planoResponse.ok) {
+                        throw new Error('Erro ao carregar plano de carreira');
+                    }
+                    const plano = await planoResponse.json();
+
+                    // Chamar a função de verificação passando o ID do plano
+                    await verificarMetasConcluidas(plano.id);
+                } catch (error) {
+                    console.error('Erro ao carregar plano de carreira:', error);
+                    alert('Erro ao carregar os dados. Tente novamente mais tarde.');
+                }
+            } else {
+                alert('ID de usuário não encontrado na URL.');
+            }
+        });
+
+        // Função para pegar o ID da URL
+        function getIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // Chama a função de carregar dados passando o ID do usuário da URL
+        const userId = getIdFromUrl();  // Pega o ID da URL
+        if (userId) {
+            carregarDadosDoPlanoDeCarreira(userId);
+        } else {
+            alert('ID de usuário não encontrado na URL.');
+        }
+    </script>
+</body>
+</html>

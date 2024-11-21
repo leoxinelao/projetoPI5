@@ -1,0 +1,92 @@
+body{
+    background-color:rgb(15, 15, 15);
+    color: rgb(0, 0, 0);
+    text-align: center;
+    color: white;
+}
+
+h1{
+    padding: 20px;
+}
+.table-bg{
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px 15px 0 0;
+}
+
+.box-search{
+    display: flex;
+    justify-content: center;
+    gap: .1%;
+}
+.page-item{
+    color: brown;
+}
+.page-link{
+    color: brown;
+}
+.pagination{
+    color: brown;
+}
+.bg-primary .active {
+    border-color: #ff0000 !important;
+}
+
+.bg-primary{
+    background-color: rgba(0, 0, 0, 0.3) !important;
+
+}
+.text-primary{
+    color: rgb(80, 13, 88) !important;
+}
+.custom-btn{
+    padding-top: 4px;
+    border: none;
+    border-radius: 2px;
+    outline: none;
+    color:rgb(255, 255, 255);
+    background-color: rgb(180, 46, 46);
+    cursor: pointer;
+    display: flex;
+    
+}
+.btn-voltar {
+
+    padding: 20px;
+    background-color: rgb(180, 46, 46);
+    color: #fff; 
+    border-radius: 5px; 
+}
+.btn-voltar:hover {
+    background-color: #ffffff; 
+}
+.tabela{
+    display: flex;
+    flex-direction: column;
+    background-color:rgb(15, 15, 15);
+    padding: 5%;
+    align-items: center;
+    border: 5px solid rgb(219, 215, 215);
+    margin-top: 30px;
+}
+.form-tabela
+{
+    display: flex;
+    align-items: center;
+}
+th{
+    border-radius: 220px;
+
+}
+#tablehead{
+    color:white;
+    background-color: brown;
+    margin-left: 10%;
+    border-radius: 2px;
+}
+tr th{
+    padding: 20px;
+}
+.btn-primary{
+    background-color: rgb(180, 46, 46);
+    border-color: none;
+}

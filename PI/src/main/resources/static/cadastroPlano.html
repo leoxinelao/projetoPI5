@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/cadastroPlano.css">
+    <link rel="stylesheet" href="css/cabecalho.css">
+    <title>Cadastro</title>
+</head>
+<body>
+    
+    <header>
+        <div class="header-bot">
+            <nav class="nav-bot">
+                <ul id="title">
+                    <li><a href="principal.html">Desenvolve+</a></li>
+                    </ul>
+                    <ul>
+                    <li class="dropdown">
+                        <a href="#">Planos</a>
+                        <div class="dropdown-menu">
+                            <a href="cadastroPlano.html">Cadastrar</a>
+                            <a href="listaPlano.html">Listar</a>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        
+                    <a href="#">Usuários</a>
+                     <div class="dropdown-menu">
+                        <a href="cadastro.html">Cadastrar</a>
+                        <a href="listaUsuario.html">Listar</a>
+                      </div>
+                        </li>
+                    <li><a href="login.html">Sair</a></li>
+                    <li>
+                        <a href="notificação.html">
+                            <i class="fas fa-bell"></i> <!-- Ícone de sino -->
+                           
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <hr id = "cabecalho-linha">
+    
+    <div class="container">
+        <div class="cadastro">
+            <h1>Cadastro de Plano de Carreira</h1> 
+            <div class="cadastro-form">
+                <form id="formCadastro" class="form-fields" onsubmit="cadastrarPlano(event)"> 
+                    <label for="nome">Nome</label>
+                    <input type="text" name="nome" required>
+
+                    <label for="cargoAtual">Cargo</label>
+                    <input type="text" name="cargoAtual" required>
+
+                    <label for="department">Departamento</label>
+                    <select name="department" required>
+                        <option value="" disabled selected>Selecione um departamento</option>
+                        <option value="Recursos Humanos">Recursos Humanos</option>
+                        <option value="Tecnologia da Informação">Tecnologia da Informação</option>
+                        <option value="Financeiro">Financeiro</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Vendas">Vendas</option>
+                        <option value="Produção">Produção</option>
+                        <option value="Logística">Logística</option>
+                        <option value="Administração">Administração</option>
+                    </select>
+                    
+                    <label for="funcionario">Funcionário</label>
+                    <select id="funcionario" name="funcionario" required>
+                        <option value="" disabled selected>Selecione um funcionário</option>
+                    </select>
+
+                    <label for="quantidadeMetas">Quantidade de Metas</label>
+                    <select id="quantidadeMetas" name="quantidadeMetas" required onchange="atualizarCamposMetas()">
+                        <option value="" disabled selected>Selecione a quantidade de metas</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+
+                    <!-- Div que será preenchida com campos de descrição de metas -->
+                    <div id="camposMetas" class="metas-container"></div>
+                    
+                    <label for="bonificacao">Bonificações</label>
+                    <input type="text" name="bonificacao" required>
+                    
+                    <input type="submit" value="Cadastrar">
+                </form>
+                <div class="logo">
+                    <img src="img/logo.jpg" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para buscar usuários e preencher o campo de seleção de funcionários
+        document.addEventListener("DOMContentLoaded", function () {
+            carregarFuncionarios();
+        });
+
+        function carregarFuncionarios() {
+            fetch('/users')
+                .then(response => response.json())
+                .then(data => {
+                    const funcionarioSelect = document.getElementById('funcionario');
+                    funcionarioSelect.innerHTML = '<option value="" disabled selected>Selecione um funcionário</option>'; // Reinicia as opções
+                    data.forEach(user => {
+                        let option = document.createElement('option');
+                        option.value = user.id; // Utiliza o ID do usuário
+                        option.textContent = user.name; // Nome do usuário para exibição
+                        funcionarioSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar funcionários:', error));
+        }
+        
+        // Função para atualizar campos de metas com base na quantidade selecionada
+        function atualizarCamposMetas() {
+            const quantidadeMetas = document.getElementById("quantidadeMetas").value;
+            const camposMetasDiv = document.getElementById("camposMetas");
+            
+            // Limpa campos antigos
+            camposMetasDiv.innerHTML = "";
+
+            // Cria campos de descrição para cada meta
+            for (let i = 1; i <= quantidadeMetas; i++) {
+                const label = document.createElement("label");
+                label.textContent = `Descrição da Meta ${i}`;
+
+                const input = document.createElement("input");
+                input.type = "text";
+                input.name = `metaDescricao${i}`;
+                input.required = true;
+
+                // Adiciona ao div de campos de metas
+                camposMetasDiv.appendChild(label);
+                camposMetasDiv.appendChild(input);
+            }
+        }
+
+        async function cadastrarPlano(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const metas = [];
+
+            // Coleta as metas do formulário
+            const quantidadeMetas = formData.get('quantidadeMetas');
+            for (let i = 1; i <= quantidadeMetas; i++) {
+                const descricao = formData.get(`metaDescricao${i}`);
+                metas.push({ descricao, status: "Pendente" });
+            }
+
+            const plano = {
+                nome: formData.get('nome'),
+                cargoAtual: formData.get('cargoAtual'),
+                bonificacao: formData.get('bonificacao'),
+                department: formData.get('department'),
+                funcionario: { id: formData.get('funcionario') },
+                metas
+            };
+
+            try {
+                const response = await fetch('/planos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(plano)
+                });
+                if (response.ok) {
+                    alert('Plano cadastrado com sucesso!');
+                    form.reset();
+                    document.getElementById('funcionario').innerHTML = '<option value="" disabled selected>Selecione um funcionário</option>';
+                    carregarFuncionarios();
+                    window.location.href = "listaPlano.html";
+                } else {
+                    alert('Erro ao cadastrar plano.');
+                }
+            } catch (error) {
+                console.error('Erro ao cadastrar plano:', error);
+            }
+        }
+
+        // Carregar funcionários ao carregar a página
+        window.onload = carregarFuncionarios;
+        
+    </script>
+</body>
+</html>

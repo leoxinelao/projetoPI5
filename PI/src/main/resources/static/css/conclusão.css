@@ -1,0 +1,19 @@
+
+
+
+body {
+    animation: mudarCor 1s infinite; 
+    height: 100vh; 
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background-color: black;
+}
+
+.texto p {   
+color: white;
+font-size: 50px;
+padding-top: 20px;
+}

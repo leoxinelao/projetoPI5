@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/Login.css">
+    <title>Login</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="login">
+            <h1>Login</h1>
+            <div class="login-form">
+                <form class="form-fields">
+                    <label for="email">E-mail</label>
+                    <input type="text" name="email" required="">
+
+                    <label for="senha">Senha</label>
+                    <input type="password" name="senha" required="">
+
+                    <input type="submit" value="Entrar">
+                </form>
+                <div class="logo">
+                    <img src="img/logo.jpg" alt="Logo">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Limpa os campos do formulário ao carregar a página
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelector("input[name='email']").value = "";
+            document.querySelector("input[name='senha']").value = "";
+        });
+
+        document.querySelector("form").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Impede o comportamento padrão do formulário
+
+            // Captura os valores do formulário
+            const email = document.querySelector("input[name='email']").value;
+            const senha = document.querySelector("input[name='senha']").value;
+
+            // Cria um objeto com os dados
+            const loginData = {
+                email: email,
+                senha: senha
+            };
+
+            try {
+                // Envia uma requisição POST para o backend
+                const response = await fetch('http://localhost:8080/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(loginData)
+                });
+
+                // Verifica a resposta do servidor
+               if (response.ok) {
+                const responseData = await response.json(); // Agora esperamos um JSON
+                const classe = responseData.classe; // Acessa a classe do usuário
+                 const userId = responseData.id; // Acessa o ID do usuário
+
+                // Salva o ID do usuário no localStorage
+                 localStorage.setItem('userId', userId);
+
+                 if (classe === 'Administrador') {
+                      window.location.href = "principal.html"; // Redireciona para página do Administrador
+                 } else if (classe === 'Funcionario') {
+                    window.location.href = "principal2.html"; // Redireciona para página do Funcionário
+                }
+
+
+                } else {
+                    const errorMessage = await response.text();
+                    alert("Erro: " + errorMessage); // Exibe mensagem de erro
+                }
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+                alert("Ocorreu um erro ao tentar realizar o login."); // Exibe erro genérico
+            }
+        });
+    </script>
+</body>
+
+</html>

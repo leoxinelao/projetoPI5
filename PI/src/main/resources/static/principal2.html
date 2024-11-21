@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/principal.css">
+    <title>Menu</title>
+</head>
+
+<body>
+    <container class="botoes">
+        <button id="acessarTrilha" onclick="verificarPlano()"> 
+            <strong>Trilha de carreira</strong>
+        </button>
+    </container>
+
+    <script>
+        // Função para obter o ID do usuário logado
+        function obterIdUsuario() {
+            // Aqui, é necessário obter o ID do usuário que foi passado no login.
+            // Exemplo: armazenando o ID no LocalStorage durante o login
+            return localStorage.getItem("userId"); // Ajuste conforme o seu caso.
+        }
+
+        // Função que verifica se o usuário tem um plano cadastrado
+        async function verificarPlano() {
+            const userId = obterIdUsuario(); // Obtém o ID do usuário logado
+
+            if (!userId) {
+                alert("Usuário não encontrado!");
+                return;
+            }
+
+            // Fazendo a requisição para verificar se o usuário tem plano cadastrado
+            try {
+                const response = await fetch(`http://localhost:8080/planos/usuario/${userId}`);
+
+                if (response.ok) {
+                    const plano = await response.json(); // Se houver plano, resposta será o objeto do plano
+
+                    if (!plano) {
+                        alert("Você precisa estar cadastrado em um plano para acessar a Trilha de Carreira.");
+                    } else {
+                        // Se o usuário tiver um plano, redireciona para a próxima página
+                        window.location.href = `trilha2.html?id=${userId}`;
+                    }
+                } else {
+                    alert("Erro ao verificar o plano. Você deve estar cadastro em um plano para acessar a Trilha de Carreira");
+                }
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+                alert("Ocorreu um erro ao verificar seu plano.");
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/cadastro.css">
+    <link rel="stylesheet" href="css/cabecalho.css">
+    <title>Cadastro</title>
+</head>
+<body>
+    
+    <header>
+        <div class="header-bot">
+            <nav class="nav-bot">
+                <ul id="title">
+                    <li><a href="principal.html">Desenvolve+</a></li>
+                    </ul>
+                    <ul>
+                    <li class="dropdown">
+                        <a href="#">Planos</a>
+                        <div class="dropdown-menu">
+                            <a href="cadastroPlano.html">Cadastrar</a>
+                            <a href="listaPlano.html">Listar</a>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        
+                    <a href="#">Usuários</a>
+                     <div class="dropdown-menu">
+                        <a href="cadastro.html">Cadastrar</a>
+                        <a href="listaUsuario.html">Listar</a>
+                      </div>
+                        </li>
+                    <li><a href="login.html">Sair</a></li>
+                    <li>
+                        <a href="notificação.html">
+                            <i class="fas fa-bell"></i> <!-- Ícone de sino -->
+                            
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <hr id = "cabecalho-linha">
+    
+    <div class="container">
+        <div class="cadastro">
+            <h1>Cadastro de Usuário</h1>
+            <div class="cadastro-form">
+                <form id="formCadastro" class="form-fields" onsubmit="cadastrarUsuario(event)">
+                    <label for="nome">Nome</label>
+                    <input type="text" name="nome" required>
+
+                    <label for="cpf">CPF</label>
+                    <input type="number" name="cpf" pattern="\d{11}" maxlength="11" title="CPF deve conter 11 dígitos" required>
+
+                    <label for="email">E-mail</label>
+                    <input type="email" name="email" required>
+
+                    <label for="department">Departamento</label>
+                    <select name="department" required>
+                        <option value="" disabled selected>Selecione um departamento</option>
+                        <option value="Recursos Humanos">Recursos Humanos</option>
+                        <option value="Tecnologia da Informação">Tecnologia da Informação</option>
+                        <option value="Financeiro">Financeiro</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Vendas">Vendas</option>
+                        <option value="Produção">Produção</option>
+                        <option value="Logística">Logística</option>
+                        <option value="Administração">Administração</option>
+                    </select>
+                    
+                    <label for="classe">Classe</label>
+                    <select name="classe" required>
+                        <option value="" disabled selected>Selecione uma classe</option>
+                        <option value="Administrador">Administrador</option>
+                        <option value="Funcionario">Funcionário</option>
+                    </select>
+                    
+                    <label for="senha">Senha</label>
+                    <input type="password" name="senha" required>
+                    
+                    <label for="senha2">Confirmar Senha</label>
+                    <input type="password" name="senha2" required>
+
+                    <input type="submit" value="Cadastrar">
+                </form>
+                <div class="logo">
+                    <img src="img/logo.jpg" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+async function cadastrarUsuario(event) {
+    event.preventDefault(); // Impede o comportamento padrão do formulário
+
+    const form = event.target; // Obtém o formulário que acionou o evento
+    const formData = new FormData(form);
+    const senha = formData.get('senha');
+    const senha2 = formData.get('senha2'); // Captura a confirmação da senha
+
+    // Validação das senhas
+    if (senha !== senha2) {
+        alert('As senhas não coincidem. Por favor, verifique e tente novamente.');
+        return; // Sai da função se as senhas não forem iguais
+    }
+
+    const user = {
+        name: formData.get('nome'),
+        cpf: formData.get('cpf'),
+        email: formData.get('email'),
+        department: formData.get('department'),
+        classe: formData.get('classe'), // Inclui o campo 'classe'
+        senha: senha // Usa a senha já validada
+    };
+
+    try {
+        const response = await fetch('http://localhost:8080/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        });
+
+        if (response.ok) {
+            alert('Usuário cadastrado com sucesso!');
+            form.reset();
+            window.location.href = "listaUsuario.html";
+        } else if (response.status === 409) {
+            alert('Usuário já cadastrado com o mesmo CPF ou e-mail.');
+        } else {
+            const errorMessage = await response.text();
+            alert('Erro ao cadastrar usuário: ' + errorMessage);
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro na requisição.');
+    }
+}
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/trilha.css">
+    <link rel="stylesheet" href="css/cabecalho.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Tela de Progresso</title>
+</head>
+<body>
+    <header>
+        <div class="header-bot">
+            <nav class="nav-bot">
+                <ul id="title">
+                    <li><a href="principal.html">Desenvolve+</a></li>
+                </ul>
+                <ul>
+                    <li class="dropdown">
+                        <a href="#">Planos</a>
+                        <div class="dropdown-menu">
+                            <a href="cadastroPlano.html">Cadastrar</a>
+                            <a href="listaPlano.html">Listar</a>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#">Usuários</a>
+                        <div class="dropdown-menu">
+                            <a href="cadastro.html">Cadastrar</a>
+                            <a href="listaUsuario.html">Listar</a>
+                        </div>
+                    </li>
+                    <li><a href="login.html">Sair</a></li>
+                    <li>
+                        <a href="notificação.html">
+                            <i class="fas fa-bell"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <hr id="cabecalho-linha">
+    <div class="container">
+        <div class="header">
+            <div class="perfil">
+                <div class="foto"></div>
+                <div>
+                    <p class="funcionario" id="funcionario">FUNCIONÁRIO</p>
+                    <p class="cargo" id="cargo">Cargo Atual</p>
+                </div>
+            </div>
+            <div class="proximocargo">
+                Próximo cargo
+            </div>
+        </div>
+
+        <div class="etapa">
+            <h2>ETAPA 1</h2>
+        </div>
+
+        <div class="tarefas">
+            <div class="linha-unica"></div>
+
+            <!-- Divisão de Metas -->
+            <div class="objetivos">
+                <p class="section-title">Metas</p>
+                <div class="Metas" id="metas"></div>
+            </div>
+
+            <div class="linha-vertical"></div>
+
+            <!-- Divisão de Status -->
+            <div class="status">
+                <p class="section-title">Status</p>
+                <div class="status-container" id="status"></div>
+            </div>
+        </div>
+
+        <hr class="linha">
+
+        <div class="bonificacao">
+            <h3>Bonificações</h3>
+            <p>----------------</p>
+            <p>----------------</p>
+        </div>
+
+        <hr class="linha">
+    </div>
+
+    <script>
+        async function carregarDadosDoPlanoDeCarreira(userId) {
+            try {
+                const userResponse = await fetch(`http://localhost:8080/users/${userId}`);
+                if (!userResponse.ok) throw new Error('Erro ao carregar usuário');
+                const user = await userResponse.json();
+
+                const planoResponse = await fetch(`http://localhost:8080/planos/usuario/${userId}`);
+                if (!planoResponse.ok) throw new Error('Erro ao carregar plano de carreira');
+                const plano = await planoResponse.json();
+
+                document.querySelector('.funcionario').textContent = user.name;
+                document.querySelector('.cargo').textContent = plano.cargoAtual;
+                document.querySelector('.proximocargo').textContent = plano.nome;
+
+                const bonificacaoContainer = document.querySelector('.bonificacao');
+                bonificacaoContainer.innerHTML = `<h3>Bonificações</h3><p>${plano.bonificacao}</p>`;
+
+                await carregarMetas(plano.id);
+            } catch (error) {
+                console.error('Erro ao carregar os dados:', error);
+                alert('Erro ao carregar os dados. Tente novamente mais tarde.');
+            }
+        }
+
+        async function carregarMetas(planoId) {
+            try {
+                const metasResponse = await fetch(`http://localhost:8080/metas/plano/${planoId}`);
+                if (!metasResponse.ok) throw new Error('Erro ao carregar metas');
+                const metas = await metasResponse.json();
+
+                const metasContainer = document.querySelector('#metas');
+                const statusContainer = document.querySelector('#status');
+                metasContainer.innerHTML = '';
+                statusContainer.innerHTML = '';
+
+                metas.forEach((meta, index) => {
+                    const metaElement = document.createElement('div');
+                    metaElement.classList.add('meta-status');
+                    metaElement.innerHTML = `<p class="meta-descricao">${meta.descricao}</p>`;
+                    metasContainer.appendChild(metaElement);
+
+                    const statusElement = document.createElement('div');
+                    statusElement.classList.add('status-item');
+                    statusElement.innerHTML = `<p>${meta.status}</p>`;
+                    statusContainer.appendChild(statusElement);
+
+                    const botaoAlterarStatus = document.createElement('i');
+                    botaoAlterarStatus.classList.add('fas', 'fa-check-circle');
+                    botaoAlterarStatus.style.cursor = 'pointer';
+                    botaoAlterarStatus.style.marginLeft = '10px';
+                    botaoAlterarStatus.style.fontSize = '1.5em';
+                    botaoAlterarStatus.style.color = '#28a745';
+
+                    botaoAlterarStatus.onclick = () => {
+                        const confirmacao = confirm("Você tem certeza que deseja marcar esta meta como Concluída?");
+                        if (confirmacao) {
+                            alterarStatus(meta.id, statusElement, index + 1);
+                        }
+                    };
+                    statusElement.appendChild(botaoAlterarStatus);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar as metas:', error);
+                alert('Erro ao carregar as metas. Tente novamente mais tarde.');
+            }
+        }
+
+        async function alterarStatus(metaId, statusElement, tarefaNumero) {
+            try {
+                const response = await fetch(`http://localhost:8080/metas/${metaId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'Concluída' })
+                });
+
+                if (!response.ok) throw new Error('Erro ao alterar o status da meta');
+
+                statusElement.querySelector('p').textContent = 'Concluída';
+
+                const nomeFuncionario = document.querySelector('.funcionario').textContent;
+                const mensagem = `A tarefa ${tarefaNumero} do funcionário ${nomeFuncionario} foi concluída.`;
+                salvarNotificacao(mensagem);
+
+                alert('Status da meta alterado para Concluída!');
+            } catch (error) {
+                console.error('Erro ao alterar o status:', error);
+                alert('Erro ao alterar o status. Tente novamente mais tarde.');
+            }
+        }
+
+        function salvarNotificacao(mensagem) {
+            const notificacoes = JSON.parse(localStorage.getItem('notificacoes')) || [];
+            notificacoes.push(mensagem);
+            localStorage.setItem('notificacoes', JSON.stringify(notificacoes));
+        }
+
+        function getIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        const userId = getIdFromUrl();
+        if (userId) {
+            carregarDadosDoPlanoDeCarreira(userId);
+        } else {
+            alert('ID de usuário não encontrado na URL.');
+        }
+    </script>
+</body>
+</html>
